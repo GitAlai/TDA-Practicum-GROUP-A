@@ -22,7 +22,7 @@ with open('letters.csv', newline='') as csvfile:
         DataFromCSVLine = row[0].split(',')[1:]
         tenBytenMatrix = []
         for RowsInMatrix in range (10):
-          tenBytenMatrix.append(DataFromCSVLine[RowsInMatrix*10:(RowsInMatrix+1)*10])
+            tenBytenMatrix.append(DataFromCSVLine[RowsInMatrix*10:(RowsInMatrix+1)*10])
         
         ListOfCharacter.append(tenBytenMatrix)
         
@@ -212,7 +212,7 @@ def TopToBottom(matrix):
                
             else:
                 matrix[column][row]=float(column) +1.0
-        
+       
     return matrix
 
 def USDictionaryUpdate(dgm):
@@ -271,32 +271,46 @@ def RipserMat(i,j):
     mat=mat.astype(np.float) #convert to float
     co = np.argwhere(mat!=0)# create matrix of coordinates 
     if len(co)==0: #if empty data set then all values are 0
-        H1=0;R1=(0,0);R2=(0,0);RL0=0;RRL0=(0,0);RRL1=(0,0);RRL2=(0,0);LR0=0;RLR0=(0,0);RLR1=(0,0);RLR2=(0,0);TB0=0;RTB0=(0,0);RTB1=(0,0);RTB2=(0,0);
+        H1=0;H2=0;H3=0;R1=(0,0);R2=(0,0);RL0=0;RRL0=(0,0);RRL1=(0,0);RRL2=(0,0);LR0=0;RLR0=(0,0);RLR1=(0,0);RLR2=(0,0);TB0=0;RTB0=(0,0);RTB1=(0,0);RTB2=(0,0);
         BT0=0;RBT0=(0,0);RBT1=(0,0);RBT2=(0,0);LL0=0;LL1= 0;LL2=0;LLLS0=0;LLLS1=0;LLLS2=0;CO0=0;CO1= 0;CO2=0;COLS0=0;COLS1=0;COLS2=0;CI0=0;
         CI1= 0;CI2=0;CILS0=0;CILS1=0;CILS2=0;RLLS0= 0;RLLS1=0;RLLS2=0;LRLS0=0;LRLS1=0;LRLS2=0;TBLS0=0;TBLS1=0;TBLS2=0;BTLS0=0;BTLS1=0;BTLS2=0
-        ranges= [RLLS0,RLLS1,RLLS2,LRLS0,LRLS1,LRLS2,TBLS0,TBLS1,TBLS2,BTLS0,BTLS1,BTLS2,LLLS0,LLLS1,LLLS2,COLS0,COLS1,COLS2,CILS0,CILS1,CILS2]  
+        ranges= [RLLS0,RLLS1,RLLS2,LRLS0,LRLS1,LRLS2,TBLS0,TBLS1,TBLS2,BTLS0,BTLS1,BTLS2,LLLS0,LLLS1,LLLS2,COLS0,COLS1,COLS2,CILS0,CILS1,CILS2,H1,H2,H3]  
 
     else:
+        
         dgms = ripser(co)['dgms']#analyses the point cloud of coordinates in ripser 
         OneDset=(dgms[1:][0])#defines the range of 1D homology ""
-    
+
         if len(OneDset)>0: #delete all repeated values
             OneDset=np.unique(OneDset, axis=0)          
-    
+
         H1=len(OneDset)
-            
+        
         for h in np.arange(len(OneDset)):
             index1=(OneDset[h][1])
             index0=(OneDset[h][0])
             feat=np.subtract((OneDset[h][1]),(OneDset[h][0]))
-                
-                #removes noise in 1D
+            
+            #removes noise in 1D
             if feat < 1:
                 index.append(h)
-                                        
+                                    
         OneDset= np.delete(OneDset,index,0)
-                          
-        H1=(len(OneDset))          
+                      
+        H1=(len(OneDset))
+        H2=0
+        H3=0
+        
+        if H1 ==1:
+            H1=0
+            H2=100
+            H3=0
+        elif H1 ==0 :
+            H1=100
+        elif H1 ==2:
+            H1=0
+            H2=0
+            H3=100            
     
             #RIGHT TO LEFT scan    
         RLmat=RightToLeft(mat) 
@@ -350,7 +364,7 @@ def RipserMat(i,j):
         mat=np.array(i) 
         mat=mat.astype(np.float)
             
-        ranges= [RLLS0,RLLS1,RLLS2,LRLS0,LRLS1,LRLS2,TBLS0,TBLS1,TBLS2,BTLS0,BTLS1,BTLS2,LLLS0,LLLS1,LLLS2,COLS0,COLS1,COLS2,CILS0,CILS1,CILS2]  
+        ranges= [RLLS0,RLLS1,RLLS2,LRLS0,LRLS1,LRLS2,TBLS0,TBLS1,TBLS2,BTLS0,BTLS1,BTLS2,LLLS0,LLLS1,LLLS2,COLS0,COLS1,COLS2,CILS0,CILS1,CILS2,H1,H2,H3]  
     
     for i in range(len(ranges)):
         if i<=2 and ranges[i]!=0.0:
@@ -389,31 +403,79 @@ def UnknownLetter(file, j):
     Distances=[]
     Hamm=[]
     Mink=[]
-    
-    
+    Distperc=[]
+    Hammperc=[]
+    Minkperc=[]
+     
     for index, row in ClassificationOutput.iterrows():
         b=np.array(row)     
         dist=distance.euclidean(a,b)  
         hamm=distance.hamming(a,b)
         mink=distance.minkowski(a,b,1)
+        manh=distance.cityblock(a,b)
         Distances.append(dist)
         Hamm.append(hamm)
         Mink.append(mink)
         
+    maxDist= np.max(Distances)
+    maxMink= np.max(Mink)
+    minDist= np.min(Distances)
+    minHamm= np.min(Hamm)
+    minMink= np.min(Mink)  
+    
+    for i in Distances:
+        perc=(1-(i-minDist)/( maxDist-minDist))*100
+        Distperc.append(perc)
+    for i in Hamm:
+        perc=(1- ((i/1)))*100
+        Hammperc.append(perc)
+    for i in Mink:
+        perc= (1-(i-minMink)/( maxMink-minMink))*100
+        Minkperc.append(perc)
+
+    Distperc=np.array(Distperc)
+    Distperc=np.around(Distperc,decimals=4)
+    Distperc=np.sort(Distperc)
+ 
+    Hammperc=np.array(Hammperc)
+    Hammperc=np.around(Hammperc,decimals=4)
+    Hammperc=np.sort(Hammperc)
+    
+    Minkperc=np.array(Minkperc)
+    Minkperc=np.around(Minkperc,decimals=4)
+    Minkperc=np.sort(Minkperc)
+    
     Answer=Distances.index(min(Distances))
     Distances[Answer]=1000
     Answer=t[Answer:Answer+1]
+
     Answer2=Distances.index(min(Distances))
     Distances[Answer2]=1000
     Answer2=t[Answer2:Answer2+1]    
     Answer3=Distances.index(min(Distances))
     Answer3=t[Answer3:Answer3+1]
-    Hammanswer=Hamm.index(min(Hamm))
-    Hammanswer=t[Hammanswer:Hammanswer+1]
-    Minkanswer=Mink.index(min(Mink))
-    Minkanswer=t[Minkanswer:Minkanswer+1]
     
-    return UnknownV,UnknownT,Distances,Answer,Answer2,Answer3,Hammanswer,Minkanswer
+    Hammanswer=Hamm.index(min(Hamm))
+    Hamm[Hammanswer]=Hamm[Hammanswer]+10
+    Hammanswer=t[Hammanswer:Hammanswer+1]
+    Hammanswer2=Hamm.index(min(Hamm))
+    Hamm[Hammanswer2]=Hamm[Hammanswer2]+10
+    Hammanswer2=t[Hammanswer2:Hammanswer2+1]    
+    Hammanswer3=Hamm.index(min(Hamm))
+    Hammanswer3=t[Hammanswer3:Hammanswer3+1]
+    
+    Minkanswer=Mink.index(min(Mink))
+    Mink[Minkanswer]=1000
+    Minkanswer=t[Minkanswer:Minkanswer+1]
+    Minkanswer2=Mink.index(min(Mink))
+    Mink[Minkanswer2]=1000
+    Minkanswer2=t[Minkanswer2:Minkanswer2+1]    
+    Minkanswer3=Mink.index(min(Mink))
+    Minkanswer3=t[Minkanswer3:Minkanswer3+1]
+    
+
+    
+    return UnknownV,UnknownT,Distperc,Hammperc,Minkperc,Distances,Hamm, Mink, Answer,Answer2,Answer3,Hammanswer,Hammanswer2,Hammanswer3,Minkanswer,Minkanswer2,Minkanswer3
             
 
             
@@ -421,14 +483,22 @@ def UnknownLetter(file, j):
 ClassificationKey=[ClassifyH1(i) for i in s]
 
 
-UnknownV,UnknownT,Distances,Answer,Answer2,Answer3,Hammanswer,Minkanswer=UnknownLetter('TestR.csv',99)
-ClassificationKey=np.array(ClassificationKey)
-ClassificationOutput=pd.DataFrame(dataset,columns=["RLLS0","RLLS1","RLLS2", "LRLS0","LRLS1","LRLS2","TBLS0",'TBLS1','TBLS2','BTLS0','BTLS1','BTLS2','LLLS0','LLLS1','LLLS2','COLS0','COLS1','COLS2','CILS0','CILS1','CILS2'])
+ClassificationOutput=pd.DataFrame(dataset,columns=["RLLS0","RLLS1","RLLS2", "LRLS0","LRLS1","LRLS2","TBLS0",'TBLS1','TBLS2','BTLS0','BTLS1','BTLS2','LLLS0','LLLS1','LLLS2','COLS0','COLS1','COLS2','CILS0','CILS1','CILS2',"H1","H2", "H3"])
 DuplicatedFeatureMat=ClassificationOutput[ClassificationOutput.duplicated()]
-print('The unknown letter is: ' +str(Answer) +' or is it: ' +str(Answer2) +' or maybe: ' +str(Answer3))
+
+UnknownV,UnknownT,Distperc,Hammperc,Minkperc,Distances,Hamm, Mink,Answer,Answer2,Answer3,Hammanswer,Hammanswer2,Hammanswer3,Minkanswer,Minkanswer2,Minkanswer3=UnknownLetter('TestZ2.csv',99)
+Results=[Answer,Answer2,Answer3,Hammanswer,Hammanswer2,Hammanswer3,Minkanswer,Minkanswer2,Minkanswer3]
+ClassificationKey=np.array(ClassificationKey)
 print('\n')
-print('Hamming Method: ' + str(Hammanswer))
+print('Eucladian Distance: ' +str(Answer) +',' +str(Answer2) +',' +str(Answer3))
+print (np.flip(Distperc[np.argsort(Distperc)[-3:]]))
 print('\n')
-print('Minkowski Method: '+str(Minkanswer))
+print('Hamming Distance: ' + str(Hammanswer) + ',' +str(Hammanswer2)+ ',' +str(Hammanswer3))
+print (np.flip(Hammperc[np.argsort(Hammperc)[-3:]]))
+print('\n')
+print('Minkowski Distance: '+str(Minkanswer)+ ',' +str(Minkanswer2)+ ',' +str(Minkanswer3))
+print (np.flip(Minkperc[np.argsort(Minkperc)[-3:]]))
+print('\n')
+
 
 
