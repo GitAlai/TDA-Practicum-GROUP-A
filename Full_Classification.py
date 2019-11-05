@@ -13,6 +13,18 @@ import PIL
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.spatial import distance
+#**************
+# ************
+#  **********
+#   ********
+#    ******
+# ************
+#  **********
+#   ********
+#    ******
+#     ****
+#      **
+TESTFILE= 'TestA.csv'
 
 ListOfCharacter=[]
 with open('letters.csv', newline='') as csvfile:
@@ -485,20 +497,8 @@ ClassificationKey=[ClassifyH1(i) for i in s]
 
 ClassificationOutput=pd.DataFrame(dataset,columns=["RLLS0","RLLS1","RLLS2", "LRLS0","LRLS1","LRLS2","TBLS0",'TBLS1','TBLS2','BTLS0','BTLS1','BTLS2','LLLS0','LLLS1','LLLS2','COLS0','COLS1','COLS2','CILS0','CILS1','CILS2',"H1","H2", "H3"])
 DuplicatedFeatureMat=ClassificationOutput[ClassificationOutput.duplicated()]
-#**************
-# ************
-#  **********
-#   ********
-#    ******
-# ************
-#  **********
-#   ********
-#    ******
-#     ****
-#      **
-UnknownV,UnknownT,Distperc,Hammperc,Minkperc,Distances,Hamm, Mink,Answer,Answer2,Answer3,Hammanswer,Hammanswer2,Hammanswer3,Minkanswer,Minkanswer2,
-    Minkanswer3=UnknownLetter('TestZ2.csv',99) #INSERT TEST FILE NAME HERE************
-#***********************************************************************************************************    
+
+UnknownV,UnknownT,Distperc,Hammperc,Minkperc,Distances,Hamm, Mink,Answer,Answer2,Answer3,Hammanswer,Hammanswer2,Hammanswer3,Minkanswer,Minkanswer2,Minkanswer3=UnknownLetter(TESTFILE,99) 
 Results=[Answer,Answer2,Answer3,Hammanswer,Hammanswer2,Hammanswer3,Minkanswer,Minkanswer2,Minkanswer3]
 ClassificationKey=np.array(ClassificationKey)
 print('\n')
