@@ -10,6 +10,6 @@ Change the Test file-
 
 1. Open Full_Classification.py in text editor.
 
-2. Scroll to end of file and edit file name on line 500
+2. Scroll to end of file and edit file name on line 27
 
 3. Save. RUN.
