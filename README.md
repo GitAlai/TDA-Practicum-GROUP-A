@@ -18,4 +18,4 @@ Change the Test file-
 
 To learn more about Algorithm:
 
-read *Character_Classification_TDA.ipynb*
+read *Character_Classification_TDA.ipynb* and *Character_Classification_TDA_Report.pdf*
